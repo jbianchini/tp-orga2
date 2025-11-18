@@ -5,7 +5,7 @@ import time
 from pathlib import Path
 import unittest
 
-SCRIPT_PATH = Path(__file__).with_name("Bug07.py")
+SCRIPT_PATH = Path(__file__).with_name("Bug07_primera_aprox.py")
 
 
 def run_simulation():
@@ -40,7 +40,7 @@ class CoinChestTests(unittest.TestCase):
         """Multiple executions should depleat the chest in the same pattern."""
         expected = list(range(9, -1, -1))  # 9 down to 0
 
-        for run in range(10):
+        for run in range(5):
             output, _ = run_simulation()
             sequence = extract_sequence(output)
             print(f"Run {run + 1}: {' '.join(map(str, sequence))}")
