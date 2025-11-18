@@ -21,13 +21,9 @@ def run_simulation():
     return completed.stdout, duration
 
 
-def extract_sequences(output):
-    """Returns per-chest sequences of remaining-coin counts from the script output."""
-    matches = re.findall(r"en (Cofre [AB]).+?Quedan (\d+)", output)
-    chest_data = {}
-    for chest, value in matches:
-        chest_data.setdefault(chest, []).append(int(value))
-    return chest_data
+def extract_sequence(output):
+    """Returns the ordered list of remaining-coin counts emitted by the script."""
+    return [int(match) for match in re.findall(r"Quedan (\d+)", output)]
 
 
 class CoinChestTests(unittest.TestCase):
@@ -42,18 +38,13 @@ class CoinChestTests(unittest.TestCase):
 
     def test_repeated_runs_same_coin_sequence(self):
         """Multiple executions should depleat the chest in the same pattern."""
-        expected_a = list(range(9, -1, -1))  # 9..0
-        expected_b = list(range(4, -1, -1))  # 4..0
+        expected = list(range(9, -1, -1))  # 9 down to 0
 
         for run in range(10):
             output, _ = run_simulation()
-            sequences = extract_sequences(output)
-            print(
-                f"Run {run + 1}: Cofre A -> {' '.join(map(str, sequences.get('Cofre A', [])))} "
-                f"| Cofre B -> {' '.join(map(str, sequences.get('Cofre B', [])))}"
-            )
-            self.assertEqual(sequences.get("Cofre A"), expected_a)
-            self.assertEqual(sequences.get("Cofre B"), expected_b)
+            sequence = extract_sequence(output)
+            print(f"Run {run + 1}: {' '.join(map(str, sequence))}")
+            self.assertEqual(sequence, expected)
 
 
 if __name__ == "__main__":

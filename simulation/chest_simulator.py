@@ -21,7 +21,7 @@ def render_state(initial_coins: int, coins_left: int) -> str:
 # ----- Código original: lógica de CoinChest y concurrencia -----
 class CoinChest:
     def __init__(self, coins: int, verbose: bool = True):
-        self.coins = coins
+        self.coins = coins #se agrega config para cantidad de coins
         self.verbose = verbose
         self.lock = threading.Lock()
 
