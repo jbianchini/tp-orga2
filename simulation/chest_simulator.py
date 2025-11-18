@@ -20,8 +20,9 @@ def render_state(initial_coins: int, coins_left: int) -> str:
 
 # ----- Código original: lógica de CoinChest y concurrencia -----
 class CoinChest:
-    def __init__(self, coins: int):
+    def __init__(self, coins: int, verbose: bool = True):
         self.coins = coins
+        self.verbose = verbose
         self.lock = threading.Lock()
 
     def take_coin(self, player_name: str) -> Tuple[bool, int]: #Intenta sacar una moneda y devuelve (éxito, monedas restantes)
@@ -30,10 +31,12 @@ class CoinChest:
             if self.coins > 0:
                 time.sleep(random.uniform(0.01, 0.05))  # Simula retraso
                 self.coins -= 1
-                print(f"{player_name} tomó una moneda. Quedan {self.coins}.")
+                if self.verbose:
+                    print(f"{player_name} tomó una moneda. Quedan {self.coins}.")
                 return True, self.coins # además devuelve el número restante
             else:
-                print(f"{player_name} no pudo tomar moneda: cofre vacío.")
+                if self.verbose:
+                    print(f"{player_name} no pudo tomar moneda: cofre vacío.")
                 return False, self.coins # acá también
             #fin seccion crítica
 
@@ -41,10 +44,11 @@ class CoinChest:
 def run_simulation(
     num_players: int = 5,
     initial_coins: int = 10,
+    verbose: bool = True,
     collect_events: bool = False,
 ) -> Optional[List[Dict[str, object]]]:
     """Ejecuta la simulación y opcionalmente devuelve un log de eventos."""
-    chest = CoinChest(initial_coins)
+    chest = CoinChest(initial_coins, verbose=verbose)
     events: Optional[List[Dict[str, object]]] = [] if collect_events else None
 
     def record_event(player_name: str, success: bool, remaining: int) -> None:
@@ -87,6 +91,7 @@ def simulate_console(
     events = run_simulation(
         num_players=num_players,
         initial_coins=initial_coins,
+        verbose=False,
         collect_events=True,
     )
 
